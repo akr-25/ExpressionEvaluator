@@ -146,12 +146,3 @@ const ValueType* LanguageParser::getValueFromKeyMap(const std::unordered_map<std
         throw ParseException("Key not found: " + keyName);
     }
 }
-
-bool LanguageParser::evaluateLogical(bool left, LogicalOperations op, bool right) {
-    switch (op) {
-        case LogicalOperations::AND: return left && right;
-        case LogicalOperations::OR: return left || right;
-        default: throw ParseException("Unsupported logical operation");
-    }
-}
-

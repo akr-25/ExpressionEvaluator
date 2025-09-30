@@ -24,8 +24,10 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
 # ---- Core library from src/ ----
-file(GLOB_RECURSE LIB_SOURCES "${SRC_DIR}/*.cpp")
-add_library(CORE_LIB STATIC ${LIB_SOURCES})
+# Use explicit file list instead of GLOB_RECURSE for better build reliability
+add_library(CORE_LIB STATIC
+  ${SRC_DIR}/parser.cpp
+)
 
 # Public headers live in include/, src/ stays private
 target_include_directories(CORE_LIB
@@ -38,6 +40,11 @@ if(MSVC)
   target_compile_options(CORE_LIB PRIVATE /W4 /permissive-)
 else()
   target_compile_options(CORE_LIB PRIVATE -Wall -Wextra -Wpedantic)
+  # Add optimization flags for better performance in Release builds
+  if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_options(CORE_LIB PRIVATE -O3 -march=native -flto)
+    set_target_properties(CORE_LIB PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+  endif()
 endif()
 
 target_compile_definitions(CORE_LIB PRIVATE PROJECT_VERSION="${PROJECT_VERSION}")
