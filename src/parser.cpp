@@ -51,31 +51,30 @@ std::function<bool(const std::vector<Key>&)> LanguageParser::parse(const FilterC
 }
 
 ValueType LanguageParser::evaluateArithmetic(const ValueType& left, ArithmeticOperations op, const ValueType& right) {
-    if (std::holds_alternative<int64_t>(left) && std::holds_alternative<int64_t>(right)) {
-        int64_t l = std::get<int64_t>(left);
-        int64_t r = std::get<int64_t>(right);
+    // Template helper to reduce code duplication
+    auto performArithmetic = [op](auto l, auto r) -> ValueType {
+        using ResultType = decltype(l + r);
         switch (op) {
-            case ArithmeticOperations::ADD: return l + r;
-            case ArithmeticOperations::SUBTRACT: return l - r;
-            case ArithmeticOperations::MULTIPLY: return l * r;
+            case ArithmeticOperations::ADD: return static_cast<ResultType>(l + r);
+            case ArithmeticOperations::SUBTRACT: return static_cast<ResultType>(l - r);
+            case ArithmeticOperations::MULTIPLY: return static_cast<ResultType>(l * r);
             case ArithmeticOperations::DIVIDE:
-                if (r == 0) throw ParseException("Division by zero");
-                return l / r;
+                if (r == 0 || r == 0.0) throw ParseException("Division by zero");
+                return static_cast<ResultType>(l / r);
             default: throw ParseException("Unsupported arithmetic operation");
         }
-    } else if ((std::holds_alternative<int64_t>(left) || std::holds_alternative<double>(left)) &&
-               (std::holds_alternative<int64_t>(right) || std::holds_alternative<double>(right))) {
+    };
+    
+    // Handle int-int case
+    if (std::holds_alternative<int64_t>(left) && std::holds_alternative<int64_t>(right)) {
+        return performArithmetic(std::get<int64_t>(left), std::get<int64_t>(right));
+    }
+    // Handle numeric mixed types (int/double combinations)
+    else if ((std::holds_alternative<int64_t>(left) || std::holds_alternative<double>(left)) &&
+             (std::holds_alternative<int64_t>(right) || std::holds_alternative<double>(right))) {
         double l = std::holds_alternative<int64_t>(left) ? static_cast<double>(std::get<int64_t>(left)) : std::get<double>(left);
         double r = std::holds_alternative<int64_t>(right) ? static_cast<double>(std::get<int64_t>(right)) : std::get<double>(right);
-        switch (op) {
-            case ArithmeticOperations::ADD: return l + r;
-            case ArithmeticOperations::SUBTRACT: return l - r;
-            case ArithmeticOperations::MULTIPLY: return l * r;
-            case ArithmeticOperations::DIVIDE:
-                if (r == 0.0) throw ParseException("Division by zero");
-                return l / r;
-            default: throw ParseException("Unsupported arithmetic operation");
-        }
+        return performArithmetic(l, r);
     } else {
         throw ParseException("Arithmetic operations require numeric types");
     }
