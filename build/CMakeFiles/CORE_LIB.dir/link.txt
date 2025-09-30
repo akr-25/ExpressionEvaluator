@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcore_lib.a CMakeFiles/CORE_LIB.dir/src/parser.cpp.o
-/usr/bin/ranlib libcore_lib.a
