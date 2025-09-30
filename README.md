@@ -341,3 +341,4 @@ Project maintained by [akr-25](https://github.com/akr-25)
 - Built with modern C++17 features
 - Uses GoogleTest for testing framework
 - Uses Google Benchmark for performance testing
+- 9 out of 9.11 words written in this repo is by AI.
