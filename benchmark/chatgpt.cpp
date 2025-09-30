@@ -28,15 +28,15 @@ namespace {
   }
 
   SubExpression SE(UnaryExpression ue,
-                   LogicalOperations prev = LogicalOperations::NONE) {
+                   LogicalOperations next = LogicalOperations::NONE) {
     return SubExpression{
-        std::variant<UnaryExpression, BinaryExpression>{std::move(ue)}, prev};
+        std::variant<UnaryExpression, BinaryExpression>{std::move(ue)}, next};
   }
 
   SubExpression SE(BinaryExpression be,
-                   LogicalOperations prev = LogicalOperations::NONE) {
+                   LogicalOperations next = LogicalOperations::NONE) {
     return SubExpression{
-        std::variant<UnaryExpression, BinaryExpression>{std::move(be)}, prev};
+        std::variant<UnaryExpression, BinaryExpression>{std::move(be)}, next};
   }
 
   std::vector<Key> MakeSequentialIntKeys(std::size_t n) {
@@ -107,7 +107,7 @@ namespace {
                    ComparisonOperations::LESS_THAN, static_cast<int64_t>(100));
       cond.sub_expressions.push_back(
           SE(std::move(be),
-             i == 0 ? LogicalOperations::NONE : LogicalOperations::AND));
+             i == chain_len - 1 ? LogicalOperations::NONE : LogicalOperations::AND));
     }
 
     auto eval = LanguageParser::parse(cond);
@@ -133,16 +133,16 @@ namespace {
       if (i % 3 == 0) {
         cond.sub_expressions.push_back(
             SE(UE(ComparisonOperations::GREATER_THAN, "k1", 0.25),
-               i == 0 ? LogicalOperations::NONE : LogicalOperations::OR));
+               i == chain_len - 1 ? LogicalOperations::NONE : LogicalOperations::OR));
       } else if (i % 3 == 1) {
         cond.sub_expressions.push_back(
             SE(UE(ComparisonOperations::LESS_THAN, "k0",
                   static_cast<int64_t>(100)),
-               i == 0 ? LogicalOperations::NONE : LogicalOperations::OR));
+               i == chain_len - 1 ? LogicalOperations::NONE : LogicalOperations::OR));
       } else {
         cond.sub_expressions.push_back(
             SE(UE(ComparisonOperations::NOT_EQUAL, "k2", std::string("str999")),
-               i == 0 ? LogicalOperations::NONE : LogicalOperations::OR));
+               i == chain_len - 1 ? LogicalOperations::NONE : LogicalOperations::OR));
       }
     }
 
@@ -173,7 +173,7 @@ namespace {
     for (int i = 0; i < chain_len; ++i) {
       cond.sub_expressions.push_back(
           SE(UE(ComparisonOperations::LESS_THAN, "name", std::string("m")),
-             i == 0 ? LogicalOperations::NONE : LogicalOperations::AND));
+             i == chain_len - 1 ? LogicalOperations::NONE : LogicalOperations::AND));
     }
 
     auto eval = LanguageParser::parse(cond);

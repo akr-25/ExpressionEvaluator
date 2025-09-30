@@ -27,7 +27,7 @@ struct BinaryExpression {
 
 struct SubExpression {
   std::variant<UnaryExpression, BinaryExpression> expr;
-  LogicalOperations prev_logical_op; // AND, OR
+  LogicalOperations next_logical_op; // AND, OR (operator that follows this expression)
 };
 
 struct FilterCondition {

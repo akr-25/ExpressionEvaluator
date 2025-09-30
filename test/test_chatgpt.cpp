@@ -23,15 +23,15 @@ namespace {
   }
 
   SubExpression SE(UnaryExpression ue,
-                   LogicalOperations prev = LogicalOperations::NONE) {
+                   LogicalOperations next = LogicalOperations::NONE) {
     return SubExpression{
-        std::variant<UnaryExpression, BinaryExpression>{std::move(ue)}, prev};
+        std::variant<UnaryExpression, BinaryExpression>{std::move(ue)}, next};
   }
 
   SubExpression SE(BinaryExpression be,
-                   LogicalOperations prev = LogicalOperations::NONE) {
+                   LogicalOperations next = LogicalOperations::NONE) {
     return SubExpression{
-        std::variant<UnaryExpression, BinaryExpression>{std::move(be)}, prev};
+        std::variant<UnaryExpression, BinaryExpression>{std::move(be)}, next};
   }
 
   std::vector<Key> MakeKeys(std::initializer_list<Key> init) {
@@ -76,11 +76,11 @@ namespace {
     auto keys = MakeKeys(
         {Key("a", static_cast<int64_t>(1)), Key("b", static_cast<int64_t>(2))});
     FilterCondition cond{
-        {SE(UE(ComparisonOperations::EQUAL, "a", static_cast<int64_t>(1))),
-         SE(UE(ComparisonOperations::EQUAL, "b", static_cast<int64_t>(2)),
+        {SE(UE(ComparisonOperations::EQUAL, "a", static_cast<int64_t>(1)),
             LogicalOperations::AND),
-         SE(UE(ComparisonOperations::NOT_EQUAL, "a", static_cast<int64_t>(0)),
-            LogicalOperations::OR)}};
+         SE(UE(ComparisonOperations::EQUAL, "b", static_cast<int64_t>(2)),
+            LogicalOperations::OR),
+         SE(UE(ComparisonOperations::NOT_EQUAL, "a", static_cast<int64_t>(0)))}};
     auto eval = LanguageParser::parse(cond);
     // (a==1) AND (b==2) OR (a!=0) -> true AND true OR true -> true
     EXPECT_TRUE(eval(keys));
