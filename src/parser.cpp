@@ -6,9 +6,15 @@
 
 std::function<bool(const std::vector<Key>&)> LanguageParser::parse(const FilterCondition& condition) {
     return [condition](const std::vector<Key>& keys) -> bool {
-        bool result = true; // Default to true for AND operations
-        for (const auto& subExpr : condition.sub_expressions) {
+        if (condition.sub_expressions.empty()) {
+            return true;
+        }
+
+        bool result = false;
+        for (size_t i = 0; i < condition.sub_expressions.size(); ++i) {
+            const auto& subExpr = condition.sub_expressions[i];
             bool subResult = false;
+            
             if (std::holds_alternative<UnaryExpression>(subExpr.expr)) {
                 const auto& expr = std::get<UnaryExpression>(subExpr.expr);
                 ValueType keyValue = getValueFromKey(keys, expr.key);
@@ -23,19 +29,24 @@ std::function<bool(const std::vector<Key>&)> LanguageParser::parse(const FilterC
                 throw ParseException("Unknown expression type");
             }
 
-            // Combine with previous results using the logical operator
-            switch (subExpr.prev_logical_op) {
-                case LogicalOperations::AND:
-                    result = result && subResult;
-                    break;
-                case LogicalOperations::OR:
-                    result = result || subResult;
-                    break;
-                case LogicalOperations::NONE:
-                    result = subResult; // For the first expression
-                    break;
-                default:
-                    throw ParseException("Unsupported logical operation");
+            // For the first expression, just set the result
+            if (i == 0) {
+                result = subResult;
+            } else {
+                // Use the logical operator from the previous expression
+                const auto& prevExpr = condition.sub_expressions[i - 1];
+                switch (prevExpr.next_logical_op) {
+                    case LogicalOperations::AND:
+                        result = result && subResult;
+                        break;
+                    case LogicalOperations::OR:
+                        result = result || subResult;
+                        break;
+                    case LogicalOperations::NONE:
+                        throw ParseException("Unexpected NONE logical operation in middle of expression chain");
+                    default:
+                        throw ParseException("Unsupported logical operation");
+                }
             }
         }
         return result;
