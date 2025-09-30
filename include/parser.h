@@ -2,6 +2,7 @@
 
 #include "filter_structs.h"
 #include <functional>
+#include <unordered_map>
 
 /**
  * The language takes a FilterCondition structure and converts it into a lambda function
@@ -18,6 +19,7 @@ private:
     static bool evaluateComparison(const ValueType& left, ComparisonOperations op, const ValueType& right);
     static bool evaluateLogical(bool left, LogicalOperations op, bool right);
     static ValueType getValueFromKey(const std::vector<Key>& keys, const std::string& keyName);
+    static const ValueType* getValueFromKeyMap(const std::unordered_map<std::string, const ValueType*>& keyMap, const std::string& keyName);
 };
 
 class ParseException : public std::exception {
