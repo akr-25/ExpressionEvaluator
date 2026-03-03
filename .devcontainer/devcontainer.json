@@ -1,0 +1,9 @@
+{
+  "name": "Windows Dev",
+  "image": "mcr.microsoft.com/windows/servercore:ltsc2022",
+  "features": {
+    "ghcr.io/devcontainers/features/cmake:latest": {},
+    "ghcr.io/devcontainers/features/git:latest": {}
+  },
+  "postCreateCommand": "powershell -Command \"winget install --id Kitware.CMake --silent\""
+}
