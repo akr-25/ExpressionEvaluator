@@ -30,7 +30,7 @@ static void BM_SimpleUnaryExpression(benchmark::State &state) {
 
   SubExpression subExpr;
   subExpr.expr = expr;
-  subExpr.prev_logical_op = LogicalOperations::NONE;
+  subExpr.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(subExpr);
 
   Evaluator evaluator;
@@ -59,7 +59,7 @@ static void BM_BinaryExpressionArithmetic(benchmark::State &state) {
 
   SubExpression subExpr;
   subExpr.expr = expr;
-  subExpr.prev_logical_op = LogicalOperations::NONE;
+  subExpr.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(subExpr);
 
   Evaluator evaluator;
@@ -87,7 +87,7 @@ static void BM_ComplexConditionAND(benchmark::State &state) {
   expr1.value = int64_t(100);
   SubExpression sub1;
   sub1.expr = expr1;
-  sub1.prev_logical_op = LogicalOperations::NONE;
+  sub1.next_logical_op = LogicalOperations::AND;
   condition.sub_expressions.push_back(sub1);
 
   // Second expression
@@ -97,7 +97,7 @@ static void BM_ComplexConditionAND(benchmark::State &state) {
   expr2.value = int64_t(500);
   SubExpression sub2;
   sub2.expr = expr2;
-  sub2.prev_logical_op = LogicalOperations::AND;
+  sub2.next_logical_op = LogicalOperations::AND;
   condition.sub_expressions.push_back(sub2);
 
   // Third expression
@@ -107,7 +107,7 @@ static void BM_ComplexConditionAND(benchmark::State &state) {
   expr3.value = int64_t(250);
   SubExpression sub3;
   sub3.expr = expr3;
-  sub3.prev_logical_op = LogicalOperations::AND;
+  sub3.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(sub3);
 
   Evaluator evaluator;
@@ -134,7 +134,7 @@ static void BM_ComplexConditionOR(benchmark::State &state) {
   expr1.value = int64_t(1000);
   SubExpression sub1;
   sub1.expr = expr1;
-  sub1.prev_logical_op = LogicalOperations::NONE;
+  sub1.next_logical_op = LogicalOperations::OR;
   condition.sub_expressions.push_back(sub1);
 
   UnaryExpression expr2;
@@ -143,7 +143,7 @@ static void BM_ComplexConditionOR(benchmark::State &state) {
   expr2.value = int64_t(50);
   SubExpression sub2;
   sub2.expr = expr2;
-  sub2.prev_logical_op = LogicalOperations::OR;
+  sub2.next_logical_op = LogicalOperations::OR;
   condition.sub_expressions.push_back(sub2);
 
   UnaryExpression expr3;
@@ -152,7 +152,7 @@ static void BM_ComplexConditionOR(benchmark::State &state) {
   expr3.value = int64_t(250);
   SubExpression sub3;
   sub3.expr = expr3;
-  sub3.prev_logical_op = LogicalOperations::OR;
+  sub3.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(sub3);
 
   Evaluator evaluator;
@@ -179,7 +179,7 @@ static void BM_MixedLogicalOperations(benchmark::State &state) {
   expr1.value = int64_t(100);
   SubExpression sub1;
   sub1.expr = expr1;
-  sub1.prev_logical_op = LogicalOperations::NONE;
+  sub1.next_logical_op = LogicalOperations::AND;
   condition.sub_expressions.push_back(sub1);
 
   UnaryExpression expr2;
@@ -188,7 +188,7 @@ static void BM_MixedLogicalOperations(benchmark::State &state) {
   expr2.value = int64_t(500);
   SubExpression sub2;
   sub2.expr = expr2;
-  sub2.prev_logical_op = LogicalOperations::AND;
+  sub2.next_logical_op = LogicalOperations::OR;
   condition.sub_expressions.push_back(sub2);
 
   UnaryExpression expr3;
@@ -197,7 +197,7 @@ static void BM_MixedLogicalOperations(benchmark::State &state) {
   expr3.value = int64_t(250);
   SubExpression sub3;
   sub3.expr = expr3;
-  sub3.prev_logical_op = LogicalOperations::OR;
+  sub3.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(sub3);
 
   Evaluator evaluator;
@@ -224,7 +224,7 @@ static void BM_StringComparison(benchmark::State &state) {
 
   SubExpression subExpr;
   subExpr.expr = expr;
-  subExpr.prev_logical_op = LogicalOperations::NONE;
+  subExpr.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(subExpr);
 
   Evaluator evaluator;
@@ -253,7 +253,7 @@ static void BM_DoubleArithmetic(benchmark::State &state) {
 
   SubExpression subExpr;
   subExpr.expr = expr;
-  subExpr.prev_logical_op = LogicalOperations::NONE;
+  subExpr.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(subExpr);
 
   Evaluator evaluator;
@@ -280,7 +280,7 @@ static void BM_VaryingKeyCount(benchmark::State &state) {
 
   SubExpression subExpr;
   subExpr.expr = expr;
-  subExpr.prev_logical_op = LogicalOperations::NONE;
+  subExpr.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(subExpr);
 
   Evaluator evaluator;
@@ -309,8 +309,8 @@ static void BM_VaryingExpressionCount(benchmark::State &state) {
 
     SubExpression subExpr;
     subExpr.expr = expr;
-    subExpr.prev_logical_op =
-        (i == 0) ? LogicalOperations::NONE : LogicalOperations::AND;
+    subExpr.next_logical_op =
+        (i == expr_count - 1) ? LogicalOperations::NONE : LogicalOperations::AND;
     condition.sub_expressions.push_back(subExpr);
   }
 
@@ -344,7 +344,7 @@ static void BM_AllArithmeticOps(benchmark::State &state) {
 
   SubExpression subExpr;
   subExpr.expr = expr;
-  subExpr.prev_logical_op = LogicalOperations::NONE;
+  subExpr.next_logical_op = LogicalOperations::NONE;
   condition.sub_expressions.push_back(subExpr);
 
   Evaluator evaluator;

@@ -5,8 +5,8 @@ int main() {
     // Example usage of the Evaluator with a simple filter condition
     FilterCondition condition = {
         {
-            { UnaryExpression{ComparisonOperations::GREATER_THAN, "A", int64_t(10)}, LogicalOperations::NONE },
-            { UnaryExpression{ComparisonOperations::LESS_THAN, "B", int64_t(20)}, LogicalOperations::AND }
+            { UnaryExpression{ComparisonOperations::GREATER_THAN, "A", int64_t(10)}, LogicalOperations::AND },
+            { UnaryExpression{ComparisonOperations::LESS_THAN, "B", int64_t(20)}, LogicalOperations::NONE }
         }
     };
 
